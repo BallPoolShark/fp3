@@ -1,2 +1,1 @@
-# fp3
- I2P2FinalProject3
+NTHU I2P3   MiniChess AI
