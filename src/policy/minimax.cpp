@@ -17,13 +17,14 @@ int getMin(State *state, int depth, int curlv);
 Move MM::get_move(State *state, int depth){
   if(!state->legal_actions.size())
     state->get_legal_actions();
+  auto actions = state->legal_actions;
   int maxv=-5000000;
   Move Maxmove;
-  for(auto actions : state->legal_actions){
-            State* nst=state->next_state(actions);
+  for(auto nm : actions){
+            State* nst=state->next_state(nm);
             if(getMin(nst, depth, 1)>maxv){
                 maxv=getMin(nst, depth, 1);
-                Maxmove=actions;
+                Maxmove=nm;
             }
         }
   return Maxmove;
@@ -36,8 +37,9 @@ int getMax(State *state, int depth, int curlv){
             state->get_legal_actions();
         for(auto actions : state->legal_actions){
             State* nst=state->next_state(actions);
-            if(nst->evaluate()>maxv){
-                maxv=nst->evaluate();
+            int v=nst->evaluate();
+            if(v>maxv){
+                maxv=v;
             }
         }
     }else{
@@ -45,8 +47,9 @@ int getMax(State *state, int depth, int curlv){
             state->get_legal_actions();
         for(auto actions : state->legal_actions){
             State* nst=state->next_state(actions);
-            if(getMin(nst, depth, curlv+1)>maxv){
-                maxv=getMin(nst, depth, curlv+1);
+            int v=getMin(nst, depth, curlv+1);
+            if(v>maxv){
+                maxv=v;
             }
         }
     }
@@ -62,8 +65,9 @@ int getMin(State *state, int depth, int curlv){
             state->get_legal_actions();
         for(auto actions : state->legal_actions){
             State* nst=state->next_state(actions);
-            if(nst->evaluate()<minv){
-                minv=nst->evaluate();
+            int v=nst->evaluate();
+            if(v<minv){
+                minv=v;
             }
         }
     }else{
@@ -71,8 +75,9 @@ int getMin(State *state, int depth, int curlv){
             state->get_legal_actions();
         for(auto actions : state->legal_actions){
             State* nst=state->next_state(actions);
-            if(getMax(nst, depth, curlv+1)<minv){
-                minv=getMax(nst, depth, curlv+1);
+            int v=getMax(nst, depth, curlv+1);
+            if(v<minv){
+                minv=v;
             }
         }
     }
