@@ -6,6 +6,8 @@
 #include "../config.hpp"
 
 
+int piecevalue[7]={0,10,50,30,30,90,500000};
+
 /**
  * @brief evaluate the state
  * 
@@ -13,7 +15,100 @@
  */
 int State::evaluate(){
   // [TODO] design your own evaluation function
-  return 0;
+  int selfv=0;
+  int enyv=0;
+
+ auto self_board = this->board.board[this->player];
+  auto oppn_board = this->board.board[1 - this->player];
+  
+  int now_piece, oppn_piece;
+  for(int i=0; i<BOARD_H; i+=1){
+    for(int j=0; j<BOARD_W; j+=1){
+      if((now_piece=self_board[i][j])){
+
+        int eatvalue=0;
+        // std::cout << this->player << "," << now_piece << ' ';
+        switch (now_piece){
+          case 1: //pawn
+            if(this->player && i<BOARD_H-1){
+
+              //black
+              if(j<BOARD_W-1 && (oppn_piece=oppn_board[i+1][j+1])>0){
+                eatvalue+=piecevalue[oppn_piece];
+              }
+              if(j>0 && (oppn_piece=oppn_board[i+1][j-1])>0){
+                eatvalue+=piecevalue[oppn_piece];
+              }
+            }else if(!this->player && i>0){
+              //white
+              if(j<BOARD_W-1 && (oppn_piece=oppn_board[i-1][j+1])>0){
+                eatvalue+=piecevalue[oppn_piece];
+              }
+              if(j>0 && (oppn_piece=oppn_board[i-1][j-1])>0){
+                eatvalue+=piecevalue[oppn_piece];
+              }
+            }
+            break;
+          
+          case 2: //rook
+          case 4: //bishop
+          case 5: //queen
+            int st, end;
+            switch (now_piece){
+              case 2: st=0; end=4; break; //rook
+              case 4: st=4; end=8; break; //bishop
+              case 5: st=0; end=8; break; //queen
+              default: st=0; end=-1;
+            }
+            for(int part=st; part<end; part+=1){
+              auto move_list = move_table_rook_bishop[part];
+              for(int k=0; k<std::max(BOARD_H, BOARD_W); k+=1){
+                int p[2] = {move_list[k][0] + i, move_list[k][1] + j};
+                
+                if(p[0]>=BOARD_H || p[0]<0 || p[1]>=BOARD_W || p[1]<0) break;
+                now_piece = self_board[p[0]][p[1]];
+                if(now_piece) break;
+                
+                
+                
+                oppn_piece = oppn_board[p[0]][p[1]];
+                eatvalue+=piecevalue[oppn_piece];
+              }
+            }
+
+            break;
+          
+          case 3: //knight
+            for(auto move: move_table_knight){
+              int x = move[0] + i;
+              int y = move[1] + j;
+              
+              if(x>=BOARD_H || x<0 || y>=BOARD_W || y<0) continue;
+              now_piece = self_board[x][y];
+              if(now_piece) continue;
+              
+              
+              oppn_piece = oppn_board[x][y];
+              eatvalue+=piecevalue[oppn_piece];
+            }
+            break;
+          
+          case 6: //king
+            
+            break;
+        }
+        selfv+=piecevalue[now_piece]+eatvalue/3;
+      }
+
+
+      if((now_piece=oppn_board[i][j])){
+        enyv+=piecevalue[now_piece];
+      }
+
+    }
+  }
+
+  return selfv-enyv;
 }
 
 
