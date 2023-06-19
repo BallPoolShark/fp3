@@ -2,11 +2,11 @@
 #include <sstream>
 #include <cstdint>
 
-#include "./state.hpp"
+#include "./easystate.hpp"
 #include "../config.hpp"
 
 
-int piecevalue[7]={0,20,60,70,80,200,500000};
+int piecevalue[7]={0,10,50,30,30,90,500000};
 
 
 
@@ -38,11 +38,10 @@ static const int move_table_king[8][2] = {
 
 
 /**
- * @brief evaluate the state
+ * @brief evaluate the state only with piecevalue
  * 
  * @return int 
  */
-
 int State::evaluate(){
   // [TODO] design your own evaluation function
   int selfv=0;
@@ -58,20 +57,20 @@ int State::evaluate(){
         // std::cout << this->player << "," << now_piece << ' ';
         switch (now_piece){
           case 1: //pawn
-            selfv+=10;
+            selfv+=20;
             break;
           
           case 2: //rook
-            selfv+=50;
+            selfv+=60;
             break;
           case 3: //knight
-            selfv+=30;
+            selfv+=70;
             break;
           case 4: //bishop
-            selfv+=30;
+            selfv+=80;
             break;
           case 5: //queen
-            selfv+=90;
+            selfv+=200;
             break;
           
           case 6: //king
@@ -85,20 +84,20 @@ int State::evaluate(){
         // std::cout << this->player << "," << now_piece << ' ';
         switch (now_piece){
           case 1: //pawn
-            enyv+=10;
+            enyv+=20;
             break;
           case 2: //rook
-            enyv+=50;
+            enyv+=60;
             break;
           case 4: //bishop
-            enyv+=30;
+            enyv+=80;
             break;
           case 5: //queen
-            enyv+=90;
+            enyv+=200;
             break;
           
           case 3: //knight
-            enyv+=30;
+            enyv+=70;
             break;
           
           case 6: //king

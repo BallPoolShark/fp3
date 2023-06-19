@@ -93,7 +93,7 @@ State* State::next_state(Move move){
     next_state->get_legal_actions();
   return next_state;
 }
-
+ 
 
 static const int move_table_rook_bishop[8][7][2] = {
   {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
