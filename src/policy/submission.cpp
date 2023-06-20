@@ -1,10 +1,9 @@
 #include <cstdlib>
 
 #include "../state/state.hpp"
-#include "./ABP.hpp"
+#include "./submission.hpp"
 
-int getMax(State *state, int depth, int curlv, int beta);
-int getMin(State *state, int depth, int curlv, int alpha);
+
 /**
  * @brief Randomly get a legal action
  * 
