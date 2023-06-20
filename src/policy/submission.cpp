@@ -1,10 +1,10 @@
 #include <cstdlib>
 
 #include "../state/state.hpp"
-#include "./minimax.hpp"
+#include "./ABP.hpp"
 
-int getMax(State *state, int depth, int curlv);
-int getMin(State *state, int depth, int curlv);
+int getMax(State *state, int depth, int curlv, int beta);
+int getMin(State *state, int depth, int curlv, int alpha);
 /**
  * @brief Randomly get a legal action
  * 
@@ -14,23 +14,27 @@ int getMin(State *state, int depth, int curlv);
  */
 
 
-Move MM::get_move(State *state, int depth){
+Move ABP::get_move(State *state, int depth){
   if(!state->legal_actions.size())
     state->get_legal_actions();
   auto actions = state->legal_actions;
-  int maxv=-500000000;
+  int alpha=-500000000;
   Move Maxmove;
   for(auto nm : actions){
-            State* nst=state->next_state(nm);
-            if(getMin(nst, depth, 1)>maxv){
-                maxv=getMin(nst, depth, 1);
-                Maxmove=nm;
-            }
+        State* nst=state->next_state(nm);
+        int nv=0;
+        // if(alpha==-500000000) nv=getMin(nst, depth, 1, 500000000);
+        // else 
+        nv=getMin(nst, depth, 1, alpha);
+        if(nv>alpha){
+            alpha=nv;
+            Maxmove=nm;
         }
+    }
   return Maxmove;
 }
 
-int getMax(State *state, int depth, int curlv){
+int getMax(State *state, int depth, int curlv, int beta){
     int maxv=-500000000;
     if(curlv>=depth){
         if(!state->legal_actions.size())
@@ -38,6 +42,7 @@ int getMax(State *state, int depth, int curlv){
         for(auto actions : state->legal_actions){
             State* nst=state->next_state(actions);
             int v=nst->evaluate();
+            if(v>beta) return v;
             if(v>maxv){
                 maxv=v;
             }
@@ -47,7 +52,11 @@ int getMax(State *state, int depth, int curlv){
             state->get_legal_actions();
         for(auto actions : state->legal_actions){
             State* nst=state->next_state(actions);
-            int v=getMin(nst, depth, curlv+1);
+            int v=0;
+            // if(maxv==-500000000) v=getMin(nst, depth, curlv+1, 500000000);
+            // else 
+            v=getMin(nst, depth, curlv+1, maxv);
+            if(v>beta) return v;
             if(v>maxv){
                 maxv=v;
             }
@@ -58,7 +67,7 @@ int getMax(State *state, int depth, int curlv){
 
 
 
-int getMin(State *state, int depth, int curlv){
+int getMin(State *state, int depth, int curlv, int alpha){
     int minv=500000000;
     if(curlv>=depth){
         if(!state->legal_actions.size())
@@ -66,6 +75,7 @@ int getMin(State *state, int depth, int curlv){
         for(auto actions : state->legal_actions){
             State* nst=state->next_state(actions);
             int v=nst->evaluate();
+            if(v<alpha) return v;
             if(v<minv){
                 minv=v;
             }
@@ -75,7 +85,11 @@ int getMin(State *state, int depth, int curlv){
             state->get_legal_actions();
         for(auto actions : state->legal_actions){
             State* nst=state->next_state(actions);
-            int v=getMax(nst, depth, curlv+1);
+            int v=0;
+            // if(minv==500000000) v=getMin(nst, depth, curlv+1, -500000000);
+            // else 
+            v=getMin(nst, depth, curlv+1, minv);
+            if(v<alpha) return v;
             if(v<minv){
                 minv=v;
             }
